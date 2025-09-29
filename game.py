@@ -117,9 +117,10 @@ def main():
             game_board = result(game_board, getBotMove(game_board)-1, "X")
             current_player = player()
         pass
-
+    
+    display_board(game_board)
     print("\nGame Over!\n")
-    if check_winner()!=None:
+    if check_winner(game_board)!=None:
         print(f"Winner: {check_winner(game_board)} - {"player" if check_winner(game_board) == "O" else "bot"}")
     else:
         print("Draw")
