@@ -55,9 +55,9 @@ def actions(board):
             l.append(int(cell))
     return l
 
-def result(board, slot):
+def result(board, slot, player=current_player):
     b = board.copy()
-    b[slot] = current_player
+    b[slot] = player
     return b
 
 def maxValue(board):
@@ -66,7 +66,7 @@ def maxValue(board):
     v = float('-inf')
 
     for action in actions(board):
-        v = max(v, minValue(result(board, action-1)))
+        v = max(v, minValue(result(board, action-1, player="X")))
     return v
 
 
@@ -76,7 +76,7 @@ def minValue(board):
     v = float('inf')
 
     for action in actions(board):
-        v = min(v, maxValue(result(board, action-1)))
+        v = min(v, maxValue(result(board, action-1, player="O")))
     return v
 
 def getBotMove(board):
@@ -87,7 +87,7 @@ def getBotMove(board):
     best_move = None
 
     for action in actions(board):
-        move_value = minValue(result(board, action-1))
+        move_value = minValue(result(board, action-1, "X"))
 
         if move_value > best_value:
             best_value = move_value
@@ -108,18 +108,21 @@ def main():
                     print("Valid moves: ", actions(game_board))
                     continue
                 else:
-                    game_board = result(game_board, int(move)-1)
+                    game_board = result(game_board, int(move)-1, "O")
                     current_player = player()
                     display_board(game_board)
                     break
         else:
-            print("The bot is chooing")
-            game_board = result(game_board, getBotMove(game_board)-1)
+            print("The bot is choosing")
+            game_board = result(game_board, getBotMove(game_board)-1, "X")
             current_player = player()
         pass
 
     print("\nGame Over!\n")
-    print(f"Winner: {check_winner(game_board)} - {"player" if check_winner(game_board) == "O" else "bot"}")
+    if check_winner()!=None:
+        print(f"Winner: {check_winner(game_board)} - {"player" if check_winner(game_board) == "O" else "bot"}")
+    else:
+        print("Draw")
         
 
 main()
