@@ -1,4 +1,6 @@
 current_player = "X"
+bot_icon = "X"
+player_icon = "O"
 
 def display_board(board):
     print("--+---+--+--")
@@ -41,9 +43,9 @@ def draw(board):
     return check_winner(board) == None and is_board_full(board)
 
 def utility(board):
-    if check_winner(board) == "X":
+    if check_winner(board) == bot_icon:
         return 1
-    elif check_winner(board) == "O":
+    elif check_winner(board) == player_icon:
         return -1
     elif draw(board):
         return 0
@@ -66,7 +68,7 @@ def maxValue(board):
     v = float('-inf')
 
     for action in actions(board):
-        v = max(v, minValue(result(board, action-1, player="X")))
+        v = max(v, minValue(result(board, action-1, player=bot_icon)))
     return v
 
 
@@ -76,7 +78,7 @@ def minValue(board):
     v = float('inf')
 
     for action in actions(board):
-        v = min(v, maxValue(result(board, action-1, player="O")))
+        v = min(v, maxValue(result(board, action-1, player=player_icon)))
     return v
 
 def getBotMove(board):
@@ -87,7 +89,7 @@ def getBotMove(board):
     best_move = None
 
     for action in actions(board):
-        move_value = minValue(result(board, action-1, "X"))
+        move_value = minValue(result(board, action-1, player=bot_icon))
 
         if move_value > best_value:
             best_value = move_value
@@ -96,10 +98,23 @@ def getBotMove(board):
 
 def main():
     global current_player
+    global bot_icon
+    global player_icon
+    
+    while True:
+        player_icon = input("Choose your icon: X or O (X gets the first move): ")
+        if player_icon not in ["X", "O"]:
+            continue
+        else:
+            if player_icon == "X":
+                bot_icon = "O"
+            break
+    print("\n")
+
     game_board = [_ for _ in range(1,10)]
     while not is_terminal_state(game_board):
         display_board(game_board)
-        if current_player == "O":
+        if current_player == player_icon:
             move = 0
             while True:
                 move = input("Your turn, select a slot: ")
@@ -108,22 +123,23 @@ def main():
                     print("Valid moves: ", actions(game_board))
                     continue
                 else:
-                    game_board = result(game_board, int(move)-1, "O")
-                    current_player = player()
+                    game_board = result(game_board, int(move)-1, player=player_icon)
+                    current_player = bot_icon
                     display_board(game_board)
                     break
         else:
             print("The bot is choosing")
-            game_board = result(game_board, getBotMove(game_board)-1, "X")
-            current_player = player()
+            game_board = result(game_board, getBotMove(game_board)-1, player=bot_icon)
+            current_player = player_icon
         pass
     
     display_board(game_board)
     print("\nGame Over!\n")
     if check_winner(game_board)!=None:
-        print(f"Winner: {check_winner(game_board)} - {"player" if check_winner(game_board) == "O" else "bot"}")
+        print(f"Winner: {check_winner(game_board)} - {"you" if check_winner(game_board) == player_icon else "bot"}")
     else:
         print("Draw")
+    input()
         
 
 main()
